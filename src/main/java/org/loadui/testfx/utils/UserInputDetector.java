@@ -11,6 +11,7 @@ public class UserInputDetector implements Runnable {
     private volatile boolean wasTilted = false;
     private volatile Thread testThread;
     private volatile Point lastPoint = null;
+    private volatile boolean paused = false;
 
     static {
         Thread t = new Thread(instance);
@@ -38,7 +39,7 @@ public class UserInputDetector implements Runnable {
     }
 
     public void assertPointsAreEqual(Point p1, Point p2) {
-        if (! equals(p1, p2, 3)) {
+        if (! equals(p1, p2, 3) && !paused) {
             userInputDetected();
         }
     }
@@ -50,6 +51,14 @@ public class UserInputDetector implements Runnable {
 
     public synchronized void reset() {
         lastPoint = null;
+    }
+    
+    public synchronized void pause() {
+        paused = true;
+    }
+    
+    public synchronized void unpause() {
+        paused = false;
     }
 
     private void userInputDetected() {
